@@ -141,9 +141,47 @@ static void tft_video_sync(struct tft_priv *priv, int xs, int ys, int xe, int ye
     write_buf_dc(priv, vmem, len, 1);
 }
 
-void tft_video_flush(int xs, int ys, int xe, int ye, void *vmem, size_t len)
+void tft_video_flush(int xs, int ys, int xe, int ye, void *vmem, uint32_t len)
 {
-    tft_video_sync(&g_priv, xs, ys, xe, ye, vmem, len);
+    xTaskToNotify = xTaskGetCurrentTaskHandle();
+
+    g_priv.tftops->video_sync(&g_priv, xs, ys, xe, ye, vmem, len);
+
+    xTaskNotifyGiveIndexed(xTaskToNotify, XArrayIndex);
+
+    xTaskToNotify = NULL;
+}
+
+portTASK_FUNCTION(video_flush_task, pvParameters)
+{
+    const TickType_t xMaxBlockTime = pdMS_TO_TICKS( 100 );
+    uint32_t ulNotificationValue;
+    struct video_frame vf;
+
+    for (;;) {
+        /* if lvgl request to draw */
+        if (xQueueReceive(xToFlushQueue, &vf, portMAX_DELAY)) {
+            // pr_debug("Received video frame to flush\n");
+            tft_video_flush(vf.xs, vf.ys, vf.xe, vf.ye, vf.vmem, vf.len);
+
+            /* waiting for notification */
+            ulNotificationValue = ulTaskNotifyTakeIndexed(XArrayIndex, pdTRUE, xMaxBlockTime);
+            // pr_debug("Received notification, val : %d\n", ulNotificationValue);
+
+            if (ulNotificationValue > 0) {
+                call_lv_disp_flush_ready();
+            } else {
+                /* timeout */
+            }
+        }
+    }
+
+    vTaskDelete(NULL);
+}
+
+void tft_async_video_flush(struct video_frame *vf)
+{
+    xQueueSend(xToFlushQueue, (void *)vf, portMAX_DELAY);
 }
 
 static int tft_gpio_init(struct tft_priv *priv)

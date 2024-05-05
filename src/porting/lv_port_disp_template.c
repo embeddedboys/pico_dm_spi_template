@@ -46,6 +46,7 @@ static void disp_flush( lv_disp_drv_t *disp_drv, const lv_area_t *area,
 /**********************
  *  STATIC VARIABLES
  **********************/
+static lv_disp_drv_t disp_drv;
 
 /**********************
  *      MACROS
@@ -54,7 +55,6 @@ static void disp_flush( lv_disp_drv_t *disp_drv, const lv_area_t *area,
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
-extern void tft_video_flush(int xs, int ys, int xe, int ye, void *vmem16, size_t len);
 
 void lv_port_disp_init( void )
 {
@@ -88,18 +88,18 @@ void lv_port_disp_init( void )
      *      and you only need to change the frame buffer's address.
      */
 
-#define MY_DISP_BUF_SIZE (MY_DISP_HOR_RES * MY_DISP_VER_RES)
+#define MY_DISP_BUF_SIZE (MY_DISP_HOR_RES * MY_DISP_VER_RES / 2)
 
     /* Example for 1) */
-    static lv_disp_draw_buf_t draw_buf_dsc_1;
-    static lv_color_t buf_1[MY_DISP_BUF_SIZE];                          /*A buffer for 10 rows*/
-    lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, MY_DISP_BUF_SIZE);   /*Initialize the display buffer*/
+    // static lv_disp_draw_buf_t draw_buf_dsc_1;
+    // static lv_color_t buf_1[MY_DISP_BUF_SIZE];                          /*A buffer for 10 rows*/
+    // lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, MY_DISP_BUF_SIZE);   /*Initialize the display buffer*/
 
     /* Example for 2) */
-    // static lv_disp_draw_buf_t draw_buf_dsc_2;
-    // static lv_color_t buf_2_1[MY_DISP_HOR_RES * 10];                        /*A buffer for 10 rows*/
-    // static lv_color_t buf_2_2[MY_DISP_HOR_RES * 10];                        /*An other buffer for 10 rows*/
-    // lv_disp_draw_buf_init(&draw_buf_dsc_2, buf_2_1, buf_2_2, MY_DISP_HOR_RES * 10);   /*Initialize the display buffer*/
+    static lv_disp_draw_buf_t draw_buf_dsc_2;
+    static lv_color_t buf_2_1[MY_DISP_BUF_SIZE];                        /*A buffer for 10 rows*/
+    static lv_color_t buf_2_2[MY_DISP_BUF_SIZE];                        /*An other buffer for 10 rows*/
+    lv_disp_draw_buf_init(&draw_buf_dsc_2, buf_2_1, buf_2_2, MY_DISP_BUF_SIZE);   /*Initialize the display buffer*/
 
     /* Example for 3) also set disp_drv.full_refresh = 1 below*/
     // static lv_disp_draw_buf_t draw_buf_dsc_3;
@@ -111,7 +111,7 @@ void lv_port_disp_init( void )
      * Register the display in LVGL
      *----------------------------------*/
 
-    static lv_disp_drv_t disp_drv;                  /*Descriptor of a display driver*/
+    // static lv_disp_drv_t disp_drv;                  /*Descriptor of a display driver*/
     lv_disp_drv_init( &disp_drv );                  /*Basic initialization*/
 
     /*Set up the functions to access to your display*/
@@ -125,8 +125,8 @@ void lv_port_disp_init( void )
     disp_drv.flush_cb = disp_flush;
 
     /*Set a display buffer*/
-    disp_drv.draw_buf = &draw_buf_dsc_1;
-    // disp_drv.draw_buf = &draw_buf_dsc_2;
+    // disp_drv.draw_buf = &draw_buf_dsc_1;
+    disp_drv.draw_buf = &draw_buf_dsc_2;
     // disp_drv.draw_buf = &draw_buf_dsc_3;
 
     /*Required for Example 3)*/
@@ -164,24 +164,30 @@ static void disp_exit( void )
     /*You code here*/
 }
 
+void __time_critical_func(call_lv_disp_flush_ready)(void)
+{
+    lv_disp_flush_ready(&disp_drv);
+}
+
 /*Flush the content of the internal buffer the specific area on the display
  *You can use DMA or any hardware acceleration to do this operation in the background but
  *'lv_disp_flush_ready()' has to be called when finished.*/
 static void disp_flush( lv_disp_drv_t *disp_drv, const lv_area_t *area,
                         lv_color_t *color_p )
 {
-    tft_video_flush(
-        area->x1,
-        area->y1,
-        area->x2,
-        area->y2,
-        (void *)color_p,
-        lv_area_get_size(area) * 2
-    );
+    struct video_frame vf = {
+        .xs = area->x1,
+        .ys = area->y1,
+        .xe = area->x2,
+        .ye = area->y2,
+        .vmem = (void *)color_p,
+        .len = lv_area_get_size(area) * 2,
+    };
+    tft_async_video_flush(&vf);
 
     /*IMPORTANT!!!
      *Inform the graphics library that you are ready with the flushing*/
-    lv_disp_flush_ready( disp_drv );
+    // lv_disp_flush_ready( disp_drv );
 }
 
 /*OPTIONAL: GPU INTERFACE*/

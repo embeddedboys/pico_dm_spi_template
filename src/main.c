@@ -49,7 +49,7 @@
 
 // #include "debug.h"
 
-// QueueHandle_t xToFlushQueue = NULL;
+QueueHandle_t xToFlushQueue = NULL;
 
 void vApplicationTickHook()
 {
@@ -94,7 +94,7 @@ int main(void)
 
     printf("\n\n\nPICO DM SPI Template LVGL Porting\n");
 
-    // xToFlushQueue = xQueueCreate(2, sizeof(struct video_frame));
+    xToFlushQueue = xQueueCreate(2, sizeof(struct video_frame));
 
     // extern int tft_driver_init(void);
     // tft_driver_init();
@@ -106,12 +106,12 @@ int main(void)
 
     printf("Starting demo\n");
     // lv_example_btn_1();
-    lv_demo_widgets();
+    // lv_demo_widgets();
     // lv_demo_stress();
     // lv_demo_music();
 
     /* measure weighted fps and opa speed */
-    // lv_demo_benchmark();
+    lv_demo_benchmark();
 
     /* This is a factory test app */
     // factory_test();
@@ -120,9 +120,9 @@ int main(void)
     xTaskCreate(lv_timer_task_handler, "lvgl_task", 2048, NULL, (tskIDLE_PRIORITY + 3), &lvgl_task_handle);
     vTaskCoreAffinitySet(lvgl_task_handle, (1 << 0));
 
-    // TaskHandle_t video_flush_handler;
-    // xTaskCreate(video_flush_task, "video_flush", 256, NULL, (tskIDLE_PRIORITY + 2), &video_flush_handler);
-    // vTaskCoreAffinitySet(video_flush_handler, (1 << 1));
+    TaskHandle_t video_flush_handler;
+    xTaskCreate(video_flush_task, "video_flush", 256, NULL, (tskIDLE_PRIORITY + 2), &video_flush_handler);
+    vTaskCoreAffinitySet(video_flush_handler, (1 << 1));
 
     // backlight_driver_init();
     // backlight_set_level(100);

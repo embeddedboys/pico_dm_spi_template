@@ -27,7 +27,7 @@ static int tft_st7789_init_display(struct tft_priv *priv)
     priv->tftops->reset(priv);
 
     write_reg(priv, 0x11);
-    sleep_ms(120);
+    mdelay(120);
 
     write_reg(priv, 0x36, 0x00);
 
