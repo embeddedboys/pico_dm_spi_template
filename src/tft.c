@@ -90,7 +90,6 @@ define_tft_write_reg(tft_write_reg16, u16)
 
 static int tft_reset(struct tft_priv *priv)
 {
-    pr_debug("%s\n", __func__);
     dm_gpio_set_value(priv->gpio.reset, 1);
     mdelay(10);
     dm_gpio_set_value(priv->gpio.reset, 0);
