@@ -61,6 +61,8 @@ struct tft_display {
     u32                     xoffs;
     u32                     yoffs;
 
+    bool                    need_tx_buf;
+
     struct tft_ops          tftops;
 };
 

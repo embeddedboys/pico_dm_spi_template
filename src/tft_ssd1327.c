@@ -98,29 +98,50 @@ static void tft_ssd1327_set_addr_win(struct tft_priv *priv, int xs, int ys, int 
 #define RED(a)      ((((a) & 0xf800) >> 11) << 3)
 #define GREEN(a)    ((((a) & 0x07e0) >> 5) << 2)
 #define BLUE(a)     (((a) & 0x001f) << 3)
-static inline uint8_t rgb565_to_4bit_grayscale(uint16_t rgb565)
+#define to_rgb565(r,g,b) ((r) << 11 | (g) << 5 | (b))
+static inline u16 rgb565_to_grayscale_by_average(u16 rgb565)
 {
-    int r, g, b;
-    uint16_t gray;
+        int r, g, b;
+        u16 gray;
 
-    /* get each channel and expand them to 8 bit */
-    r = RED(rgb565);
-    g = GREEN(rgb565);
-    b = BLUE(rgb565);
+        r = RED(rgb565);
+        g = GREEN(rgb565);
+        b = BLUE(rgb565);
 
-    /* convert rgb888 to grayscale */
-    gray = ((r * 77 + g * 151 + b * 28) >> 8); // 0 ~ 255
-    if (gray == 0)
+        gray = ((r + g + b) / 3);
+
+        /* map to rgb565 format */
+        r = b = gray * 31 / 255;  // 0 ~ 31
+        g = gray * 63 / 255;
+
+        return to_rgb565(r, g, b);
+}
+
+static inline u8 rgb565_to_4bit_grayscale(u16 rgb565)
+{
+        int r, g, b;
+        int level;
+        u16 gray;
+
+        /* get each channel and expand them to 8 bit */
+        r = RED(rgb565);
+        g = GREEN(rgb565);
+        b = BLUE(rgb565);
+
+        /* convert rgb888 to grayscale */
+        gray = ((r * 77 + g * 151 + b * 28) >> 8); // 0 ~ 255
+        if (gray == 0)
+                return gray;
+
+        /*
+         * so 4-bit grayscale like:
+         * B3  B2  B1  B0
+         * 0   0   0   0
+         * which means have 16 kind of gray
+         */
+        gray /= 16;
+
         return gray;
-
-    /*
-     * so 4-bit grayscale like:
-     * B3  B2  B1  B0
-     * 0   0   0   0
-     * which means have 16 kind of gray
-     */
-
-    return (gray / 16);
 }
 
 static void tft_ssd1327_video_sync(struct tft_priv *priv, int xs, int ys, int xe, int ye, void *vmem, size_t len)
@@ -133,32 +154,26 @@ static void tft_ssd1327_video_sync(struct tft_priv *priv, int xs, int ys, int xe
     int i, j;
 
     priv->tftops->set_addr_win(priv, xs, ys, xe, ye);
-    
+
     remain = len / 2;
     tx_array_size = priv->txbuf.len;
 
     while (remain) {
         to_copy = MIN(tx_array_size, remain);
-        
+
         for (i = 0, j = 0; i < to_copy; i += 2, j++) {
             p0 = rgb565_to_4bit_grayscale(vmem16[i]);
             p1 = rgb565_to_4bit_grayscale(vmem16[i+1]);
             tx_buf[j] = (p0 << 4) | p1;
         }
-        
+
         vmem16 = vmem16 + to_copy;
-        
+
         write_buf_dc(priv, tx_buf, to_copy / 2, 1);
-        
+
         remain -= to_copy;
     }
 
-    // for (i = 0, j =0; i < (TFT_HOR_RES * TFT_VER_RES); i+=2, j++) {
-    //     p0 = rgb565_to_4bit_grayscale(vmem16[i]);
-    //     p1 = rgb565_to_4bit_grayscale(vmem16[i+1]);
-    //     tx_buf[j] = (p0 << 4) | p1;
-    // }
-    // write_buf_dc(priv, tx_buf, j, 1);
 }
 
 static struct tft_display ssd1327 = {
@@ -166,6 +181,7 @@ static struct tft_display ssd1327 = {
     .yres = TFT_Y_RES,
     .bpp  = 16,
     .backlight = 100,
+    .need_tx_buf = true,
     .tftops = {
         .write_reg = tft_write_reg8,
         .init_display = tft_ssd1327_init_display,

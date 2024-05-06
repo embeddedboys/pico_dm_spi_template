@@ -285,17 +285,10 @@ int tft_probe(struct tft_display *display)
         return -1;
     }
 
-    priv->txbuf.buf = (u8 *)malloc(TFT_TX_BUF_SIZE);
-    if (!priv->txbuf.buf) {
-        pr_debug("failed to allocate tx buffer\n");
-        goto exit_free_priv_buf;
-    }
-    priv->txbuf.len = TFT_TX_BUF_SIZE;
-
     priv->tftops = (struct tft_ops *)malloc(sizeof(struct tft_ops));
     if (!priv->tftops) {
         pr_debug("failed to allocate tftops\n");
-        goto exit_free_tx_buf;
+        goto exit_free_priv_buf;
     }
 
     priv->display = display;
@@ -312,14 +305,23 @@ int tft_probe(struct tft_display *display)
     priv->tftops->clear = tft_clear;
     priv->tftops->video_sync = tft_video_sync;
 
+    if (priv->display->need_tx_buf) {
+        priv->txbuf.buf = (u8 *)malloc(TFT_TX_BUF_SIZE);
+        if (!priv->txbuf.buf) {
+            pr_debug("failed to allocate tx buffer\n");
+            goto exit_free_tftops;
+        }
+        priv->txbuf.len = TFT_TX_BUF_SIZE;
+    }
+
     tft_merge_tftops(priv->tftops, &display->tftops);
 
     tft_hw_init(priv);
 
     return 0;
 
-exit_free_tx_buf:
-    free(priv->txbuf.buf);
+exit_free_tftops:
+    free(priv->tftops);
 exit_free_priv_buf:
     free(priv->buf);
     return -1;
