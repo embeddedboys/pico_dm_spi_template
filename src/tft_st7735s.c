@@ -21,9 +21,9 @@
 
 #include "tft.h"
 
-#if LCD_DRV_USE_ST7789
+#if LCD_DRV_USE_ST7735
 
-static int tft_st7789_init_display(struct tft_priv *priv)
+static int tft_st7735_init_display(struct tft_priv *priv)
 {
     printf("%s, writing patched initial sequence...\n", __func__);
     priv->tftops->reset(priv);
@@ -31,60 +31,48 @@ static int tft_st7789_init_display(struct tft_priv *priv)
     write_reg(priv, 0x11);
     mdelay(120);
 
-    write_reg(priv, 0x36, 0x00);
-
-    write_reg(priv, 0x3A, 0x05);
-
-    write_reg(priv, 0xB2, 0x0C, 0x0C, 0x00, 0x33, 0x33);
-
-    write_reg(priv, 0xB7, 0x35);
-
-    write_reg(priv, 0xBB, 0x32);
-
-    write_reg(priv, 0xC0, 0x2C);
-
-    write_reg(priv, 0xC2, 0x01);
-
-    write_reg(priv, 0xC3, 0x15);
-
-    //VDV, 0x20:0v
-    write_reg(priv, 0xC4, 0x20);
-
-    //0x0F:60Hz
-    write_reg(priv, 0xC6, 0x0F);
-
-    write_reg(priv, 0xD0, 0xA4, 0xA1);
-
-    //sleep in后，gate输出为GND
-    write_reg(priv, 0xD6, 0xA1);
-
-    write_reg(priv, 0xE0, 0xD0, 0x08, 0x0E, 0x09, 0x09, 0x05, 0x31, 0x33, 0x48, 0x17, 0x14, 0x15, 0x31, 0x34);
-
-    write_reg(priv, 0xE1, 0xD0, 0x08, 0x0E, 0x09, 0x09, 0x15, 0x31, 0x33, 0x48, 0x17, 0x14, 0x15, 0x31, 0x34);
-
-    //使用240根gate  (N+1)*8
-    //设定gate起点位置
-    //当gate没有用完时，bit4(TMG)设为0
-    write_reg(priv, 0xE4, 0x25, 0x00, 0x00);
+    write_reg(priv, 0x36, (1 << 7) | (1 << 6) | (1 << 5));
+    write_reg(priv, 0x3A, 0x55);
 
     write_reg(priv, 0x21);
     write_reg(priv, 0x29);
 }
 
-static struct tft_display st7789 = {
+static void inline tft_st7735_set_addr_win(struct tft_priv *priv, int xs, int ys, int xe, int ye)
+{
+    // Apply offset from display spec.
+    xs += priv->display->xoffs;
+    xe += priv->display->xoffs;
+    ys += priv->display->yoffs;
+    ye += priv->display->yoffs;
+
+    /* set column adddress */
+    write_reg(priv, 0x2A, xs >> 8, xs & 0xFF, xe >> 8, xe & 0xFF);
+
+    /* set row address */
+    write_reg(priv, 0x2B, ys >> 8, ys & 0xFF, ye >> 8, ye & 0xFF);
+
+    /* write start */
+    write_reg(priv, 0x2C);
+}
+
+static struct tft_display st7735 = {
     .xres = TFT_X_RES,
     .yres = TFT_Y_RES,
+    .xoffs = 0,
+    .yoffs = 25,
     .bpp  = 16,
     .backlight = 100,
     .tftops = {
         .write_reg = tft_write_reg8,
-        .init_display = tft_st7789_init_display,
+        .init_display = tft_st7735_init_display,
+        .set_addr_win = tft_st7735_set_addr_win,
     },
 };
 
 int tft_driver_init(void)
 {
-    tft_probe(&st7789);
+    tft_probe(&st7735);
     return 0;
 }
 

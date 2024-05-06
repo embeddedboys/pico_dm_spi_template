@@ -1,5 +1,5 @@
 // Copyright (c) 2024 embeddedboys developers
-
+//
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -7,10 +7,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -105,10 +105,10 @@ static void inline tft_set_addr_win(struct tft_priv *priv, int xs, int ys, int x
 {
     /* set column adddress */
     write_reg(priv, 0x2A, xs >> 8, xs & 0xFF, xe >> 8, xe & 0xFF);
-    
+
     /* set row address */
     write_reg(priv, 0x2B, ys >> 8, ys & 0xFF, ye >> 8, ye & 0xFF);
-    
+
     /* write start */
     write_reg(priv, 0x2C);
 }
@@ -124,7 +124,7 @@ static int tft_clear(struct tft_priv *priv, u16 clear)
     priv->tftops->set_addr_win(priv, 0, 0,
                          priv->display->xres - 1,
                          priv->display->yres - 1);
-    
+
     for (x = 0; x < width; x++) {
         for (y = 0; y < height; y++) {
             write_buf_dc(priv, &clear, sizeof(u16), 1);
@@ -206,7 +206,7 @@ static int tft_gpio_init(struct tft_priv *priv)
 
     // gpio_set_function(priv->gpio.blk, GPIO_FUNC_PWM);
     // bi_decl(bi_1pin_with_name(priv->gpio.blk, "TFT BLK"));
-    
+
     // uint32_t slice_num = pwm_gpio_to_slice_num(priv->gpio.blk);
     // pwm_config config = pwm_get_default_config();
     // pwm_config_set_clkdiv(&config, 4.f);

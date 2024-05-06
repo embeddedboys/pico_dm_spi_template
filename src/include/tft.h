@@ -58,6 +58,9 @@ struct tft_display {
     u32                     rotate;
     u32                     backlight;
 
+    u32                     xoffs;
+    u32                     yoffs;
+
     struct tft_ops          tftops;
 };
 
@@ -72,7 +75,7 @@ struct tft_priv {
         int cs;
         int blk;
     } gpio;
-    
+
     /* device specific */
     struct tft_display    *display;
     struct tft_ops        *tftops;

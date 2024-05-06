@@ -1,5 +1,5 @@
 /**
- * @file lv_port_disp_linux.c
+ * @file lv_port_disp_template.c
  *
  */
 
