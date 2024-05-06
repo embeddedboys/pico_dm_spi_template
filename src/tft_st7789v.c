@@ -69,6 +69,8 @@ static int tft_st7789_init_display(struct tft_priv *priv)
 
     write_reg(priv, 0x21);
     write_reg(priv, 0x29);
+
+    return 0;
 }
 
 static struct tft_display st7789 = {

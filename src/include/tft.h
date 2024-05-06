@@ -66,6 +66,10 @@ struct tft_display {
 
 struct tft_priv {
     u8                      *buf;
+    struct {
+        void                *buf;
+        size_t              len;
+    } txbuf;
 
     struct {
         int scl;
@@ -91,6 +95,7 @@ struct video_frame {
 };
 
 #define TFT_REG_BUF_SIZE 64
+#define TFT_TX_BUF_SIZE 2048
 #define TFT_X_RES TFT_HOR_RES
 #define TFT_Y_RES TFT_VER_RES
 #define ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))

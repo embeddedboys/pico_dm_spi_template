@@ -54,6 +54,8 @@ static void inline tft_st7735_set_addr_win(struct tft_priv *priv, int xs, int ys
 
     /* write start */
     write_reg(priv, 0x2C);
+
+    return 0;
 }
 
 static struct tft_display st7735 = {
