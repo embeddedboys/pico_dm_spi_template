@@ -64,10 +64,12 @@ set(TFT_HOR_RES   240)
 set(TFT_VER_RES   320)
 set(TFT_BUS_CLK_KHZ 62500)
 set(DISP_OVER_PIO 1)  # 1: PIO, 0: SPI
+math(EXPR LV_DISP_BUF_SIZE "${TFT_HOR_RES} * ${TFT_VER_RES} / 2")
 
 set(LCD_DRV_USE_ST7735  0)
 set(LCD_DRV_USE_ST7789  0)
-set(LCD_DRV_USE_SSD1327 1)
+set(LCD_DRV_USE_SSD1327 0)
+set(LCD_DRV_USE_SSD1681 1)
 
 # driver layer cmake redefine
 if(LCD_DRV_USE_ST7735)
@@ -76,6 +78,8 @@ elseif(LCD_DRV_USE_ST7789)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/st7789.cmake)
 elseif(LCD_DRV_USE_SSD1327)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/ssd1327.cmake)
+elseif(LCD_DRV_USE_SSD1681)
+    include(${CMAKE_CURRENT_LIST_DIR}/cmake/ssd1681.cmake)
 endif()
 
 SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -Wl,--print-memory-usage")
@@ -97,6 +101,7 @@ add_executable(${ProjectName}
     tft_st7735s.c
     tft_st7789v.c
     tft_ssd1327.c
+    eink_ssd1681.c
     porting/lv_port_disp_template.c
 )
 
@@ -128,11 +133,13 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC TFT_VER_RES=${TFT_VER_RES})
 target_compile_definitions(${PROJECT_NAME} PUBLIC TFT_SPIX=${TFT_SPIX})
 target_compile_definitions(${PROJECT_NAME} PUBLIC TFT_BUS_CLK_KHZ=${TFT_BUS_CLK_KHZ})
 target_compile_definitions(${PROJECT_NAME} PUBLIC DISP_OVER_PIO=${DISP_OVER_PIO})
+target_compile_definitions(${PROJECT_NAME} PUBLIC LV_DISP_BUF_SIZE=${LV_DISP_BUF_SIZE})
 
 # TFT drivers define
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7735=${LCD_DRV_USE_ST7735})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7789=${LCD_DRV_USE_ST7789})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_SSD1327=${LCD_DRV_USE_SSD1327})
+target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_SSD1681=${LCD_DRV_USE_SSD1681})
 
 # Note: If you are using a NOR flash like "w25q16". Just keep the following content.
 # The maximum speed of "w25q16" is 133MHz, However, the clock speed of XIP QSPI is divided from "sys_clk".

@@ -38,6 +38,8 @@
  **********************/
 static void disp_init( void );
 static void disp_exit( void );
+static void disp_set_pix_cb(struct _lv_disp_drv_t * disp_drv, uint8_t * buf, lv_coord_t buf_w, lv_coord_t x, lv_coord_t y,
+                      lv_color_t color, lv_opa_t opa);
 static void disp_flush( lv_disp_drv_t *disp_drv, const lv_area_t *area,
                         lv_color_t *color_p );
 //static void gpu_fill(lv_disp_drv_t * disp_drv, lv_color_t * dest_buf, lv_coord_t dest_width,
@@ -88,7 +90,7 @@ void lv_port_disp_init( void )
      *      and you only need to change the frame buffer's address.
      */
 
-#define MY_DISP_BUF_SIZE (MY_DISP_HOR_RES * MY_DISP_VER_RES / 2)
+#define MY_DISP_BUF_SIZE LV_DISP_BUF_SIZE
 
     /* Example for 1) */
     // static lv_disp_draw_buf_t draw_buf_dsc_1;
@@ -121,7 +123,9 @@ void lv_port_disp_init( void )
     disp_drv.ver_res = MY_DISP_VER_RES;
 
     /*Used to copy the buffer's content to the display*/
-    // disp_drv.set_px_cb = my_set_pix_cb;
+#if LCD_DRV_USE_SSD1681
+    disp_drv.set_px_cb = disp_set_pix_cb;
+#endif
     disp_drv.flush_cb = disp_flush;
 
     /*Set a display buffer*/
@@ -130,7 +134,9 @@ void lv_port_disp_init( void )
     // disp_drv.draw_buf = &draw_buf_dsc_3;
 
     /*Required for Example 3)*/
-    // disp_drv.full_refresh = 1;
+#if LCD_DRV_USE_SSD1681
+    disp_drv.full_refresh = 1;
+#endif
 
     // disp_drv.sw_rotate = 1;
 
@@ -144,8 +150,10 @@ void lv_port_disp_init( void )
 
     // lv_disp_set_rotation(disp, LV_DISP_ROT_90);
     /* set a mono theme */
-    // lv_theme_t *th = lv_theme_mono_init(disp, 1, &lv_font_montserrat_12);
-    // lv_disp_set_theme(disp, th);
+#if LCD_DRV_USE_SSD1681
+    lv_theme_t *th = lv_theme_mono_init(disp, 0, &lv_font_montserrat_12);
+    lv_disp_set_theme(disp, th);
+#endif
 }
 
 /**********************
@@ -162,6 +170,15 @@ static void disp_init( void )
 static void disp_exit( void )
 {
     /*You code here*/
+}
+
+static void disp_set_pix_cb(struct _lv_disp_drv_t * disp_drv, uint8_t * buf, lv_coord_t buf_w, lv_coord_t x, lv_coord_t y,
+                      lv_color_t color, lv_opa_t opa)
+{
+    if(lv_color_brightness(color) < 128)
+        buf[y * 25 + (x / 8)] &= ~( 1 << ( 7 - (x % 8) ) );
+    else
+        buf[y * 25 + (x / 8)] |= ( 1 << ( 7 - (x % 8) ) );
 }
 
 void __time_critical_func(call_lv_disp_flush_ready)(void)
