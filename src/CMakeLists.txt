@@ -69,7 +69,8 @@ math(EXPR LV_DISP_BUF_SIZE "${TFT_HOR_RES} * ${TFT_VER_RES} / 2")
 set(LCD_DRV_USE_ST7735  0)
 set(LCD_DRV_USE_ST7789  0)
 set(LCD_DRV_USE_SSD1327 0)
-set(LCD_DRV_USE_SSD1681 1)
+set(LCD_DRV_USE_SSD1681 0)
+set(LCD_DRV_USE_EINK_LUATOS 1)
 
 # driver layer cmake redefine
 if(LCD_DRV_USE_ST7735)
@@ -80,6 +81,8 @@ elseif(LCD_DRV_USE_SSD1327)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/ssd1327.cmake)
 elseif(LCD_DRV_USE_SSD1681)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/ssd1681.cmake)
+elseif(LCD_DRV_USE_EINK_LUATOS)
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/eink-luatos.cmake)
 endif()
 
 SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -Wl,--print-memory-usage")
@@ -102,6 +105,7 @@ add_executable(${ProjectName}
     tft_st7789v.c
     tft_ssd1327.c
     eink_ssd1681.c
+    eink_luatos.c
     porting/lv_port_disp_template.c
 )
 
@@ -140,6 +144,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7735=${LCD_DRV_U
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7789=${LCD_DRV_USE_ST7789})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_SSD1327=${LCD_DRV_USE_SSD1327})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_SSD1681=${LCD_DRV_USE_SSD1681})
+target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_EINK_LUATOS=${LCD_DRV_USE_EINK_LUATOS})
 
 # Note: If you are using a NOR flash like "w25q16". Just keep the following content.
 # The maximum speed of "w25q16" is 133MHz, However, the clock speed of XIP QSPI is divided from "sys_clk".

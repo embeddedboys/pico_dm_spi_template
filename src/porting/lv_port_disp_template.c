@@ -123,7 +123,7 @@ void lv_port_disp_init( void )
     disp_drv.ver_res = MY_DISP_VER_RES;
 
     /*Used to copy the buffer's content to the display*/
-#if LCD_DRV_USE_SSD1681
+#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS
     disp_drv.set_px_cb = disp_set_pix_cb;
 #endif
     disp_drv.flush_cb = disp_flush;
@@ -134,7 +134,7 @@ void lv_port_disp_init( void )
     // disp_drv.draw_buf = &draw_buf_dsc_3;
 
     /*Required for Example 3)*/
-#if LCD_DRV_USE_SSD1681
+#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS
     disp_drv.full_refresh = 1;
 #endif
 
@@ -150,7 +150,7 @@ void lv_port_disp_init( void )
 
     // lv_disp_set_rotation(disp, LV_DISP_ROT_90);
     /* set a mono theme */
-#if LCD_DRV_USE_SSD1681
+#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS
     lv_theme_t *th = lv_theme_mono_init(disp, 0, &lv_font_montserrat_12);
     lv_disp_set_theme(disp, th);
 #endif
