@@ -46,7 +46,7 @@ static struct tft_priv g_priv;
 static TaskHandle_t xTaskToNotify = NULL;
 static const UBaseType_t XArrayIndex = 1;
 
-static void tft_spi_write_buf_dc(struct tft_priv *priv, void *buf, size_t len, bool dc)
+void tft_spi_write_buf_dc(struct tft_priv *priv, void *buf, size_t len, bool dc)
 {
     gpio_put(TFT_DC_PIN, dc);
 
