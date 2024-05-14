@@ -25,17 +25,17 @@ if(OVERCLOCK_ENABLED)
     message(WARNING "Overclocking is enabled. This may damage your device. Use at your own risk.")
     # Overclocking profiles
     #      SYS_CLK  | FLASH_CLK | Voltage
-    #  1  | 266MHz  |  133MHz   |  1.10(V) (default, stable, recommended for most devices)
-    #  2  | 240MHz  |  120MHZ   |  1.10(V) (more stable)
+    #  1  | 240MHz  |  120MHZ   |  1.10(V) (default, stable, recommended for most devices)
+    #  2  | 266MHz  |  133MHz   |  1.10(V)
     #  3  | 360MHz  |  90MHz    |  1.20(V)
     #  4  | 400MHz  |  100MHz   |  1.25(V)
     set(OVERCLOCK_PROFILE 4)
 
     if(OVERCLOCK_PROFILE EQUAL 1)
-        set(SYS_CLK_KHZ 266000)             # CPU clock speed
+        set(SYS_CLK_KHZ 240000)             # CPU clock speed
         set(PERI_CLK_KHZ ${SYS_CLK_KHZ})    # Peripheral clock speed
     elseif(OVERCLOCK_PROFILE EQUAL 2)
-        set(SYS_CLK_KHZ 240000)
+        set(SYS_CLK_KHZ 266000)
         set(PERI_CLK_KHZ ${SYS_CLK_KHZ})
     elseif(OVERCLOCK_PROFILE EQUAL 3)
         set(SYS_CLK_KHZ 360000)
@@ -68,7 +68,8 @@ math(EXPR LV_DISP_BUF_SIZE "${TFT_HOR_RES} * ${TFT_VER_RES} / 2")
 
 set(LCD_DRV_USE_ILI9481 0)
 set(LCD_DRV_USE_ST7735  0)
-set(LCD_DRV_USE_ST7789  1)
+set(LCD_DRV_USE_ST7789  0)
+set(LCD_DRV_USE_ST7796  1)
 set(LCD_DRV_USE_SSD1327 0)
 set(LCD_DRV_USE_SSD1681 0)
 set(LCD_DRV_USE_EINK_LUATOS 0)
@@ -80,6 +81,8 @@ elseif(LCD_DRV_USE_ST7735)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/st7735.cmake)
 elseif(LCD_DRV_USE_ST7789)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/st7789.cmake)
+elseif(LCD_DRV_USE_ST7796)
+    include(${CMAKE_CURRENT_LIST_DIR}/cmake/st7796.cmake)
 elseif(LCD_DRV_USE_SSD1327)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/ssd1327.cmake)
 elseif(LCD_DRV_USE_SSD1681)
@@ -110,6 +113,7 @@ add_executable(${PROJECT_NAME}
     tft_ili9481.c
     tft_st7735s.c
     tft_st7789v.c
+    tft_st7796u.c
     tft_ssd1327.c
     eink_ssd1681.c
     eink_luatos.c
@@ -156,6 +160,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC LV_DISP_BUF_SIZE=${LV_DISP_BUF
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ILI9481=${LCD_DRV_USE_ILI9481})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7735=${LCD_DRV_USE_ST7735})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7789=${LCD_DRV_USE_ST7789})
+target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7796=${LCD_DRV_USE_ST7796})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_SSD1327=${LCD_DRV_USE_SSD1327})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_SSD1681=${LCD_DRV_USE_SSD1681})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_EINK_LUATOS=${LCD_DRV_USE_EINK_LUATOS})
