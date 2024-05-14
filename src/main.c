@@ -106,8 +106,8 @@ int main(void)
 
     printf("Starting demo\n");
     // lv_example_btn_1();
-    // lv_demo_widgets();
-    lv_demo_stress();
+    lv_demo_widgets();
+    // lv_demo_stress();
     // lv_demo_music();
 
     /* measure weighted fps and opa speed */

@@ -88,7 +88,8 @@ elseif(LCD_DRV_USE_EINK_LUATOS)
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/eink-luatos.cmake)
 endif()
 
-set(INDEV_DRV_USE_CST816D 1)
+set(INDEV_DRV_USE_GT911   1)
+set(INDEV_DRV_USE_CST816D 0)
 
 SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -Wl,--print-memory-usage")
 SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -Wl,--print-memory-usage")
@@ -113,6 +114,7 @@ add_executable(${PROJECT_NAME}
     eink_ssd1681.c
     eink_luatos.c
     indev.c
+    gt911.c
     cst816d.c
     i2c_tools.c
     porting/lv_port_disp_template.c
@@ -160,6 +162,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_EINK_LUATOS=${LCD_
 
 # Indev drivers define
 target_compile_definitions(${PROJECT_NAME} PUBLIC INDEV_DRV_USE_CST816D=${INDEV_DRV_USE_CST816D})
+target_compile_definitions(${PROJECT_NAME} PUBLIC INDEV_DRV_USE_GT911=${INDEV_DRV_USE_GT911})
 
 # Note: If you are using a NOR flash like "w25q16". Just keep the following content.
 # The maximum speed of "w25q16" is 133MHz, However, the clock speed of XIP QSPI is divided from "sys_clk".
