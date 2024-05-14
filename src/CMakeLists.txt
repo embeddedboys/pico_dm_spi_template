@@ -66,9 +66,9 @@ set(TFT_BUS_CLK_KHZ 62500)
 set(DISP_OVER_PIO 1)  # 1: PIO, 0: SPI
 math(EXPR LV_DISP_BUF_SIZE "${TFT_HOR_RES} * ${TFT_VER_RES} / 2")
 
-set(LCD_DRV_USE_ILI9481 1)
+set(LCD_DRV_USE_ILI9481 0)
 set(LCD_DRV_USE_ST7735  0)
-set(LCD_DRV_USE_ST7789  0)
+set(LCD_DRV_USE_ST7789  1)
 set(LCD_DRV_USE_SSD1327 0)
 set(LCD_DRV_USE_SSD1681 0)
 set(LCD_DRV_USE_EINK_LUATOS 0)
@@ -103,7 +103,7 @@ target_compile_definitions(pio_spi_tx PUBLIC TFT_CS_PIN=${TFT_CS_PIN})
 target_compile_definitions(pio_spi_tx PUBLIC TFT_BUS_CLK_KHZ=${TFT_BUS_CLK_KHZ})
 target_compile_definitions(pio_spi_tx PUBLIC DEFAULT_PIO_CLK_KHZ=${PERI_CLK_KHZ})
 
-add_executable(${ProjectName}
+add_executable(${PROJECT_NAME}
     main.c
     tft.c
     tft_ili9481.c
@@ -119,11 +119,11 @@ add_executable(${ProjectName}
     porting/lv_port_indev_template.c
 )
 
-target_include_directories(${ProjectName} PRIVATE
+target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
 )
 target_include_directories(${PROJECT_NAME} PUBLIC .)
-target_link_libraries(${ProjectName}
+target_link_libraries(${PROJECT_NAME}
     pico_stdlib
     pico_multicore
     hardware_i2c
