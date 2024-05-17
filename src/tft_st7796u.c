@@ -55,6 +55,32 @@ static int tft_st7796_init_display(struct tft_priv *priv)
     return 0;
 }
 
+static void tft_st7796_video_sync(struct tft_priv *priv, int xs, int ys, int xe, int ye, void *vmem, size_t len)
+{
+    // printf("video sync: xs=%d, ys=%d, xe=%d, ye=%d, len=%d\n", xs, ys, xe, ye, len);
+    priv->tftops->set_addr_win(priv, xs, ys, xe, ye);
+
+    /* 
+     * 8080 8-bit Data Bus for 16-bit/pixel (RGB 5-6-5 Bits Input)
+     *      DB 7     R4  G2
+     *      DB 6     R3  G1
+     *      DB 5     R2  G0
+     *      DB 4     R1  B4
+     *      DB 3     R0  B3
+     *      DB 2     G5  B2
+     *      DB 1     G4  B1
+     *      DB 0     G3  B0
+     * But a 16-bit Data Bus RGB565 order like this:
+     * B0 - B4, G0 - G5, R0 - R4 from DB0 to DB16
+     * So simply swap 2 bytes here from pixel buffer.
+     */
+    u16 *p = (u16 *)vmem;
+    for (size_t i = 0; i < len / 2; i++)
+        p[i] = (p[i] << 8) | (p[i] >> 8);
+
+    write_buf_dc(priv, vmem, len, 1);
+}
+
 static struct tft_display st7796 = {
     .xres = TFT_X_RES,
     .yres = TFT_Y_RES,
@@ -63,6 +89,7 @@ static struct tft_display st7796 = {
     .tftops = {
         .write_reg = tft_write_reg8,
         .init_display = tft_st7796_init_display,
+        .video_sync = tft_st7796_video_sync,
     },
 };
 
