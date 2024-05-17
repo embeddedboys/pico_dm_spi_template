@@ -67,6 +67,7 @@ set(DISP_OVER_PIO 1)  # 1: PIO, 0: SPI
 math(EXPR LV_DISP_BUF_SIZE "${TFT_HOR_RES} * ${TFT_VER_RES} / 2")
 
 set(LCD_DRV_USE_ILI9481 0)
+set(LCD_DRV_USE_ILI9488 0)
 set(LCD_DRV_USE_ST7735  0)
 set(LCD_DRV_USE_ST7789  0)
 set(LCD_DRV_USE_ST7796  1)
@@ -77,6 +78,8 @@ set(LCD_DRV_USE_EINK_LUATOS 0)
 # driver layer cmake redefine
 if(LCD_DRV_USE_ILI9481)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/ili9481.cmake)
+elseif(LCD_DRV_USE_ILI9488)
+    include(${CMAKE_CURRENT_LIST_DIR}/cmake/ili9488.cmake)
 elseif(LCD_DRV_USE_ST7735)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/st7735.cmake)
 elseif(LCD_DRV_USE_ST7789)
@@ -111,6 +114,7 @@ add_executable(${PROJECT_NAME}
     main.c
     tft.c
     tft_ili9481.c
+    tft_ili9488.c
     tft_st7735s.c
     tft_st7789v.c
     tft_st7796u.c
@@ -158,6 +162,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC LV_DISP_BUF_SIZE=${LV_DISP_BUF
 
 # TFT drivers define
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ILI9481=${LCD_DRV_USE_ILI9481})
+target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ILI9488=${LCD_DRV_USE_ILI9488})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7735=${LCD_DRV_USE_ST7735})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7789=${LCD_DRV_USE_ST7789})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7796=${LCD_DRV_USE_ST7796})
