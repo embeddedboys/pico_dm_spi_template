@@ -35,7 +35,7 @@ static int tft_st7796_init_display(struct tft_priv *priv)
     write_reg(priv, 0xF0, 0xC3);
     write_reg(priv, 0xF0, 0x96);
 
-    write_reg(priv, 0x36, 0x48);
+    write_reg(priv, 0x36, (1 << 5) | (1 << 3));
     write_reg(priv, 0xB4, 0x01);
 
     write_reg(priv, 0x3A, 0x05);
