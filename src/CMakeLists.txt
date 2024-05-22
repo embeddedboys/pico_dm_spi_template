@@ -19,7 +19,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-set(OVERCLOCK_ENABLED 0)    # 1: enable, 0: disable
+set(OVERCLOCK_ENABLED 1)    # 1: enable, 0: disable
 
 if(OVERCLOCK_ENABLED)
     message(WARNING "Overclocking is enabled. This may damage your device. Use at your own risk.")
@@ -29,7 +29,8 @@ if(OVERCLOCK_ENABLED)
     #  2  | 266MHz  |  133MHz   |  1.10(V)
     #  3  | 360MHz  |  90MHz    |  1.20(V)
     #  4  | 400MHz  |  100MHz   |  1.25(V)
-    set(OVERCLOCK_PROFILE 4)
+    #  5  | 432MHz  |  108MHz   |  1.25(V)
+    set(OVERCLOCK_PROFILE 5)
 
     if(OVERCLOCK_PROFILE EQUAL 1)
         set(SYS_CLK_KHZ 240000)             # CPU clock speed
@@ -42,6 +43,9 @@ if(OVERCLOCK_ENABLED)
         set(PERI_CLK_KHZ ${SYS_CLK_KHZ})
     elseif(OVERCLOCK_PROFILE EQUAL 4)
         set(SYS_CLK_KHZ 400000)
+        set(PERI_CLK_KHZ ${SYS_CLK_KHZ})
+    elseif(OVERCLOCK_PROFILE EQUAL 5)
+        set(SYS_CLK_KHZ 432000)
         set(PERI_CLK_KHZ ${SYS_CLK_KHZ})
     else()
         message(FATAL_ERROR "Invalid overclocking profile")
