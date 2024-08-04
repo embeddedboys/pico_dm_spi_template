@@ -30,7 +30,7 @@ if(OVERCLOCK_ENABLED)
     #  3  | 360MHz  |  90MHz    |  1.20(V)
     #  4  | 400MHz  |  100MHz   |  1.25(V)
     #  5  | 432MHz  |  108MHz   |  1.25(V)
-    set(OVERCLOCK_PROFILE 5)
+    set(OVERCLOCK_PROFILE 4)
 
     if(OVERCLOCK_PROFILE EQUAL 1)
         set(SYS_CLK_KHZ 240000)             # CPU clock speed
@@ -75,6 +75,7 @@ set(LCD_DRV_USE_ILI9488 0)
 set(LCD_DRV_USE_ST7735  0)
 set(LCD_DRV_USE_ST7789  0)
 set(LCD_DRV_USE_ST7796  1)
+set(LCD_DRV_USE_SSD1306 0)
 set(LCD_DRV_USE_SSD1327 0)
 set(LCD_DRV_USE_SSD1681 0)
 set(LCD_DRV_USE_EINK_LUATOS 0)
@@ -90,6 +91,8 @@ elseif(LCD_DRV_USE_ST7789)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/st7789.cmake)
 elseif(LCD_DRV_USE_ST7796)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/st7796.cmake)
+elseif(LCD_DRV_USE_SSD1306)
+    include(${CMAKE_CURRENT_LIST_DIR}/cmake/ssd1306.cmake)
 elseif(LCD_DRV_USE_SSD1327)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/ssd1327.cmake)
 elseif(LCD_DRV_USE_SSD1681)
@@ -123,6 +126,7 @@ add_executable(${PROJECT_NAME}
     tft_st7735s.c
     tft_st7789v.c
     tft_st7796u.c
+    tft_ssd1306.c
     tft_ssd1327.c
     eink_ssd1681.c
     eink_luatos.c
@@ -172,6 +176,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ILI9488=${LCD_DRV_
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7735=${LCD_DRV_USE_ST7735})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7789=${LCD_DRV_USE_ST7789})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7796=${LCD_DRV_USE_ST7796})
+target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_SSD1306=${LCD_DRV_USE_SSD1306})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_SSD1327=${LCD_DRV_USE_SSD1327})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_SSD1681=${LCD_DRV_USE_SSD1681})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_EINK_LUATOS=${LCD_DRV_USE_EINK_LUATOS})
