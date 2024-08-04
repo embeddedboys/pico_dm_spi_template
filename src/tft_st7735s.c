@@ -31,10 +31,14 @@ static int tft_st7735_init_display(struct tft_priv *priv)
     write_reg(priv, 0x11);
     mdelay(120);
 
-    write_reg(priv, 0x36, (1 << 7) | (1 << 6) | (1 << 5));
+    write_reg(priv, 0x36, 0x00);
     write_reg(priv, 0x3A, 0x55);
 
-    write_reg(priv, 0x21);
+    write_reg(priv, 0xB1, 0x40, 0x00, 0x00);
+
+    write_reg(priv, 0xC6, 0x05);
+
+    // write_reg(priv, 0x21);
     write_reg(priv, 0x29);
 }
 
@@ -60,7 +64,7 @@ static struct tft_display st7735 = {
     .xres = TFT_X_RES,
     .yres = TFT_Y_RES,
     .xoffs = 0,
-    .yoffs = 25,
+    .yoffs = 0,
     .bpp  = 16,
     .backlight = 100,
     .tftops = {
