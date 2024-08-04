@@ -61,6 +61,7 @@ void lv_port_disp_init(void)
      * Create a display and set a flush_cb
      * -----------------------------------*/
     disp = lv_display_create(MY_DISP_HOR_RES, MY_DISP_VER_RES);
+    lv_display_set_color_format(disp, LV_COLOR_FORMAT_RGB565);
     lv_display_set_flush_cb(disp, disp_flush);
 
 #define MY_DISP_BUF_SIZE LV_DISP_BUF_SIZE
@@ -124,6 +125,7 @@ void __time_critical_func(call_lv_disp_flush_ready)(void)
  *'lv_display_flush_ready()' has to be called when it's finished.*/
 static void disp_flush(lv_display_t * disp_drv, const lv_area_t * area, uint8_t * px_map)
 {
+    lv_draw_sw_rgb565_swap(px_map, lv_area_get_size(area));
     if(disp_flush_enabled) {
         struct video_frame vf = {
             .xs = area->x1,
