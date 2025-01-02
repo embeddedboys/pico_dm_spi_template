@@ -70,18 +70,21 @@ set(TFT_BUS_CLK_KHZ 62500)
 set(DISP_OVER_PIO 1)  # 1: PIO, 0: SPI
 math(EXPR LV_DISP_BUF_SIZE "${TFT_HOR_RES} * ${TFT_VER_RES} / 2")
 
+set(LCD_DRV_USE_ILI9341 1)
 set(LCD_DRV_USE_ILI9481 0)
 set(LCD_DRV_USE_ILI9488 0)
 set(LCD_DRV_USE_ST7735  0)
 set(LCD_DRV_USE_ST7789  0)
-set(LCD_DRV_USE_ST7796  1)
+set(LCD_DRV_USE_ST7796  0)
 set(LCD_DRV_USE_SSD1306 0)
 set(LCD_DRV_USE_SSD1327 0)
 set(LCD_DRV_USE_SSD1681 0)
 set(LCD_DRV_USE_EINK_LUATOS 0)
 
 # driver layer cmake redefine
-if(LCD_DRV_USE_ILI9481)
+if(LCD_DRV_USE_ILI9341)
+    include(${CMAKE_CURRENT_LIST_DIR}/cmake/ili9341.cmake)
+elseif(LCD_DRV_USE_ILI9481)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/ili9481.cmake)
 elseif(LCD_DRV_USE_ILI9488)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/ili9488.cmake)
@@ -101,6 +104,7 @@ elseif(LCD_DRV_USE_EINK_LUATOS)
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/eink-luatos.cmake)
 endif()
 
+set(INDEV_DRV_NOT_USED    0)
 set(INDEV_DRV_USE_GT911   1)
 set(INDEV_DRV_USE_TSC2007 0)
 set(INDEV_DRV_USE_CST816D 0)
@@ -121,6 +125,7 @@ target_compile_definitions(pio_spi_tx PUBLIC DEFAULT_PIO_CLK_KHZ=${PERI_CLK_KHZ}
 add_executable(${PROJECT_NAME}
     main.c
     tft.c
+    tft_ili9341.c
     tft_ili9481.c
     tft_ili9488.c
     tft_st7735s.c
@@ -171,6 +176,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC DISP_OVER_PIO=${DISP_OVER_PIO}
 target_compile_definitions(${PROJECT_NAME} PUBLIC LV_DISP_BUF_SIZE=${LV_DISP_BUF_SIZE})
 
 # TFT drivers define
+target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ILI9341=${LCD_DRV_USE_ILI9341})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ILI9481=${LCD_DRV_USE_ILI9481})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ILI9488=${LCD_DRV_USE_ILI9488})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7735=${LCD_DRV_USE_ST7735})
@@ -182,6 +188,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_SSD1681=${LCD_DRV_
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_EINK_LUATOS=${LCD_DRV_USE_EINK_LUATOS})
 
 # Indev drivers define
+target_compile_definitions(${PROJECT_NAME} PUBLIC INDEV_DRV_NOT_USED=${INDEV_DRV_NOT_USED})
 target_compile_definitions(${PROJECT_NAME} PUBLIC INDEV_DRV_USE_CST816D=${INDEV_DRV_USE_CST816D})
 target_compile_definitions(${PROJECT_NAME} PUBLIC INDEV_DRV_USE_GT911=${INDEV_DRV_USE_GT911})
 target_compile_definitions(${PROJECT_NAME} PUBLIC INDEV_DRV_USE_TSC2007=${INDEV_DRV_USE_TSC2007})

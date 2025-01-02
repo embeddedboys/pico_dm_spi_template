@@ -102,16 +102,19 @@ int main(void)
 
     lv_init();
     lv_port_disp_init();
+
+#ifndef INDEV_DRV_NOT_USED
     lv_port_indev_init();
+#endif
 
     printf("Starting demo\n");
     // lv_example_btn_1();
-    lv_demo_widgets();
+    // lv_demo_widgets();
     // lv_demo_stress();
     // lv_demo_music();
 
     /* measure weighted fps and opa speed */
-    // lv_demo_benchmark();
+    lv_demo_benchmark();
 
     /* This is a factory test app */
     // factory_test();

@@ -75,7 +75,6 @@ static inline void pio_spi_tx_wr8(PIO pio, uint sm, void *buf, size_t len)
 
 void pio_spi_tx_write_buf_dc(void *buf, size_t len, bool dc)
 {
-    uint8_t *buf8 = (uint8_t *)buf;
     pio_spi_tx_wait_idle(g_pio, g_sm);
 
     pio_spi_tx_set_dc_cs(dc, 0);
