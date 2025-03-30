@@ -126,6 +126,12 @@ extern void pio_spi_tx_write_buf_dc(void *buf, size_t len, bool dc);
 extern void tft_video_flush(int xs, int ys, int xe, int ye, void *vmem, uint32_t len);
 extern void tft_async_video_flush(struct video_frame *vf);
 
+extern void tft_write_cmd(struct tft_priv *priv, u8 cmd);
+extern void tft_write_data(struct tft_priv *priv, u8 data);
+
+#define write_cmd(priv, cmd) tft_write_cmd(priv, cmd)
+#define write_data(priv, data) tft_write_data(priv, data)
+
 extern void tft_write_reg(struct tft_priv *priv, int len, ...);
 #define NUMARGS(...)  (sizeof((int[]){__VA_ARGS__}) / sizeof(int))
 
@@ -136,7 +142,7 @@ extern void tft_write_reg16(struct tft_priv *priv, int len, ...);
     priv->tftops->write_reg(priv, NUMARGS(__VA_ARGS__), __VA_ARGS__)
 
 extern QueueHandle_t xToFlushQueue;
-extern void call_lv_disp_flush_ready(void);
 extern portTASK_FUNCTION(video_flush_task, pvParameters);
+extern void call_lv_disp_flush_ready(void);
 
 #endif

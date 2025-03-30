@@ -30,7 +30,7 @@ if(OVERCLOCK_ENABLED)
     #  3  | 360MHz  |  90MHz    |  1.20(V)
     #  4  | 400MHz  |  100MHz   |  1.25(V)
     #  5  | 432MHz  |  108MHz   |  1.25(V)
-    set(OVERCLOCK_PROFILE 4)
+    set(OVERCLOCK_PROFILE 1)
 
     if(OVERCLOCK_PROFILE EQUAL 1)
         set(SYS_CLK_KHZ 240000)             # CPU clock speed
@@ -70,10 +70,11 @@ set(TFT_BUS_CLK_KHZ 62500)
 set(DISP_OVER_PIO 1)  # 1: PIO, 0: SPI
 math(EXPR LV_DISP_BUF_SIZE "${TFT_HOR_RES} * ${TFT_VER_RES} / 2")
 
-set(LCD_DRV_USE_ILI9341 1)
+set(LCD_DRV_USE_ILI9341 0)
 set(LCD_DRV_USE_ILI9481 0)
 set(LCD_DRV_USE_ILI9488 0)
 set(LCD_DRV_USE_ST7735  0)
+set(LCD_DRV_USE_ST7576  1)
 set(LCD_DRV_USE_ST7789  0)
 set(LCD_DRV_USE_ST7796  0)
 set(LCD_DRV_USE_SSD1306 0)
@@ -90,6 +91,8 @@ elseif(LCD_DRV_USE_ILI9488)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/ili9488.cmake)
 elseif(LCD_DRV_USE_ST7735)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/st7735.cmake)
+elseif(LCD_DRV_USE_ST7576)
+    include(${CMAKE_CURRENT_LIST_DIR}/cmake/st7576.cmake)
 elseif(LCD_DRV_USE_ST7789)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/st7789.cmake)
 elseif(LCD_DRV_USE_ST7796)
@@ -129,6 +132,7 @@ add_executable(${PROJECT_NAME}
     tft_ili9481.c
     tft_ili9488.c
     tft_st7735s.c
+    tft_st7576.c
     tft_st7789v.c
     tft_st7796u.c
     tft_ssd1306.c
@@ -180,6 +184,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ILI9341=${LCD_DRV_
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ILI9481=${LCD_DRV_USE_ILI9481})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ILI9488=${LCD_DRV_USE_ILI9488})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7735=${LCD_DRV_USE_ST7735})
+target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7576=${LCD_DRV_USE_ST7576})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7789=${LCD_DRV_USE_ST7789})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7796=${LCD_DRV_USE_ST7796})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_SSD1306=${LCD_DRV_USE_SSD1306})

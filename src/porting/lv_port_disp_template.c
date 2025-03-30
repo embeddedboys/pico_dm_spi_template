@@ -123,7 +123,7 @@ void lv_port_disp_init( void )
     disp_drv.ver_res = MY_DISP_VER_RES;
 
     /*Used to copy the buffer's content to the display*/
-#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS || LCD_DRV_USE_SSD1306
+#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS || LCD_DRV_USE_SSD1306 || LCD_DRV_USE_ST7576
     disp_drv.set_px_cb = disp_set_pix_cb;
 #endif
     disp_drv.flush_cb = disp_flush;
@@ -134,7 +134,7 @@ void lv_port_disp_init( void )
     // disp_drv.draw_buf = &draw_buf_dsc_3;
 
     /*Required for Example 3)*/
-#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS || LCD_DRV_USE_SSD1306
+#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS || LCD_DRV_USE_SSD1306 || LCD_DRV_USE_ST7576
     disp_drv.full_refresh = 1;
 #endif
 
@@ -150,7 +150,7 @@ void lv_port_disp_init( void )
 
     // lv_disp_set_rotation(disp, LV_DISP_ROT_90);
     /* set a mono theme */
-#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS || LCD_DRV_USE_SSD1306
+#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS || LCD_DRV_USE_SSD1306 || LCD_DRV_USE_ST7576
     lv_theme_t *th = lv_theme_mono_init(disp, 0, &lv_font_montserrat_12);
     lv_disp_set_theme(disp, th);
 #endif
@@ -182,12 +182,12 @@ static void disp_set_pix_cb(struct _lv_disp_drv_t * disp_drv, uint8_t * buf, lv_
     else
         buf[y * 25 + (x / 8)] |= ( 1 << ( 7 - (x % 8) ) );
 
-#elif LCD_DRV_USE_SSD1306
+#elif LCD_DRV_USE_SSD1306 || LCD_DRV_USE_ST7576
 
     if(lv_color_brightness(color) < 128)
-        buf[(y / 8) * 128 + x] |= (1 << (y % 8));
+        buf[(y / 8) * TFT_HOR_RES + x] |= (1 << (y % 8));
     else
-        buf[(y / 8) * 128 + x] &= ~(1 << (y % 8));
+        buf[(y / 8) * TFT_HOR_RES + x] &= ~(1 << (y % 8));
 
 #else
 

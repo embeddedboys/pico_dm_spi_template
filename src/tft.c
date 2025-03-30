@@ -55,6 +55,16 @@ void tft_spi_write_buf_dc(struct tft_priv *priv, void *buf, size_t len, bool dc)
     dm_gpio_set_value(TFT_CS_PIN, 1);
 }
 
+inline void tft_write_cmd(struct tft_priv *priv, u8 cmd)
+{
+    write_buf_dc(priv, &cmd, sizeof(cmd), 0);
+}
+
+inline void tft_write_data(struct tft_priv *priv, u8 data)
+{
+    write_buf_dc(priv, &data, sizeof(data), 1);
+}
+
 #define define_tft_write_reg(func, reg_type) \
 void func(struct tft_priv *priv, int len, ...)  \
 {   \
