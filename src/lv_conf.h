@@ -24,7 +24,8 @@
  *====================*/
 
 /*Color depth: 1 (1 byte per pixel), 8 (RGB332), 16 (RGB565), 32 (ARGB8888)*/
-#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS || LCD_DRV_USE_SSD1306
+#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS || LCD_DRV_USE_SSD1306 \
+                        || LCD_DRV_USE_ST7576 || LCD_DRV_USE_ST7305
     #define LV_COLOR_DEPTH 1
 #else
     #define LV_COLOR_DEPTH 16

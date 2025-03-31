@@ -123,7 +123,8 @@ void lv_port_disp_init( void )
     disp_drv.ver_res = MY_DISP_VER_RES;
 
     /*Used to copy the buffer's content to the display*/
-#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS || LCD_DRV_USE_SSD1306 || LCD_DRV_USE_ST7576
+#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS || LCD_DRV_USE_SSD1306 \
+                        || LCD_DRV_USE_ST7576 || LCD_DRV_USE_ST7305
     disp_drv.set_px_cb = disp_set_pix_cb;
 #endif
     disp_drv.flush_cb = disp_flush;
@@ -134,7 +135,8 @@ void lv_port_disp_init( void )
     // disp_drv.draw_buf = &draw_buf_dsc_3;
 
     /*Required for Example 3)*/
-#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS || LCD_DRV_USE_SSD1306 || LCD_DRV_USE_ST7576
+#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS || LCD_DRV_USE_SSD1306 \
+                        || LCD_DRV_USE_ST7576 || LCD_DRV_USE_ST7305
     disp_drv.full_refresh = 1;
 #endif
 
@@ -150,7 +152,7 @@ void lv_port_disp_init( void )
 
     // lv_disp_set_rotation(disp, LV_DISP_ROT_90);
     /* set a mono theme */
-#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS || LCD_DRV_USE_SSD1306 || LCD_DRV_USE_ST7576
+#if LCD_DRV_USE_SSD1681 || LCD_DRV_USE_EINK_LUATOS || LCD_DRV_USE_SSD1306 || LCD_DRV_USE_ST7576 || LCD_DRV_USE_ST7305
     lv_theme_t *th = lv_theme_mono_init(disp, 0, &lv_font_montserrat_12);
     lv_disp_set_theme(disp, th);
 #endif
@@ -172,6 +174,40 @@ static void disp_exit( void )
     /*You code here*/
 }
 
+#if LCD_DRV_USE_ST7305
+static void st7305_put_pixel(int x, int y, u8 *buf, lv_color_t color, u8 rotation)
+{
+    u16 new_x, new_y;
+
+    switch (rotation) {
+        case 1:  // 90 degrees
+            new_x = TFT_VER_RES - y - 1;
+            new_y = x;
+            break;
+        case 2:  // 180 degrees
+            new_x = TFT_HOR_RES - x - 1;
+            new_y = TFT_VER_RES - y - 1;
+            break;
+        case 3:  // 270 degrees
+            new_x = y;
+            new_y = TFT_HOR_RES - x - 1;
+            break;
+        default: // 0 degrees
+            new_x = x;
+            new_y = y;
+            break;
+    }
+
+    u16 byte_idx = (new_y >> 3) * TFT_VER_RES + new_x;
+    u8 bit_pos = new_y & 0x07;
+
+    if (lv_color_brightness(color) < 128)
+        buf[byte_idx] |= (1 << bit_pos);
+    else
+        buf[byte_idx] &= ~(1 << bit_pos);
+}
+#endif
+
 static void disp_set_pix_cb(struct _lv_disp_drv_t * disp_drv, uint8_t * buf, lv_coord_t buf_w, lv_coord_t x, lv_coord_t y,
                       lv_color_t color, lv_opa_t opa)
 {
@@ -189,8 +225,10 @@ static void disp_set_pix_cb(struct _lv_disp_drv_t * disp_drv, uint8_t * buf, lv_
     else
         buf[(y / 8) * TFT_HOR_RES + x] &= ~(1 << (y % 8));
 
+#elif LCD_DRV_USE_ST7305
+    st7305_put_pixel(x, y, buf, color, 3);
 #else
-
+    #error "Unsupported LCD driver"
 #endif
 }
 
