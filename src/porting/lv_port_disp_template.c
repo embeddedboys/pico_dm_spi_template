@@ -228,7 +228,6 @@ static void disp_set_pix_cb(struct _lv_disp_drv_t * disp_drv, uint8_t * buf, lv_
 #elif LCD_DRV_USE_ST7305
     st7305_put_pixel(x, y, buf, color, 3);
 #else
-    #error "Unsupported LCD driver"
 #endif
 }
 
