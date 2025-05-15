@@ -73,11 +73,12 @@ math(EXPR LV_DISP_BUF_SIZE "${TFT_HOR_RES} * ${TFT_VER_RES} / 2")
 set(LCD_DRV_USE_ILI9341 0)
 set(LCD_DRV_USE_ILI9481 0)
 set(LCD_DRV_USE_ILI9488 0)
-set(LCD_DRV_USE_ST7305  1)
+set(LCD_DRV_USE_ST7305  0)
 set(LCD_DRV_USE_ST7735  0)
 set(LCD_DRV_USE_ST7576  0)
 set(LCD_DRV_USE_ST7789  0)
 set(LCD_DRV_USE_ST7796  0)
+set(LCD_DRV_USE_ST77916 1)
 set(LCD_DRV_USE_SSD1306 0)
 set(LCD_DRV_USE_SSD1327 0)
 set(LCD_DRV_USE_SSD1681 0)
@@ -100,6 +101,8 @@ elseif(LCD_DRV_USE_ST7789)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/st7789.cmake)
 elseif(LCD_DRV_USE_ST7796)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/st7796.cmake)
+elseif(LCD_DRV_USE_ST77916)
+    include(${CMAKE_CURRENT_LIST_DIR}/cmake/st77916.cmake)
 elseif(LCD_DRV_USE_SSD1306)
     include(${CMAKE_CURRENT_LIST_DIR}/cmake/ssd1306.cmake)
 elseif(LCD_DRV_USE_SSD1327)
@@ -139,6 +142,7 @@ add_executable(${PROJECT_NAME}
     tft_st7576.c
     tft_st7789v.c
     tft_st7796u.c
+    tft_st77916.c
     tft_ssd1306.c
     tft_ssd1327.c
     eink_ssd1681.c
@@ -192,6 +196,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7735=${LCD_DRV_U
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7576=${LCD_DRV_USE_ST7576})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7789=${LCD_DRV_USE_ST7789})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST7796=${LCD_DRV_USE_ST7796})
+target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_ST77916=${LCD_DRV_USE_ST77916})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_SSD1306=${LCD_DRV_USE_SSD1306})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_SSD1327=${LCD_DRV_USE_SSD1327})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LCD_DRV_USE_SSD1681=${LCD_DRV_USE_SSD1681})

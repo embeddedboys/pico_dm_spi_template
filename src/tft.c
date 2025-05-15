@@ -98,6 +98,16 @@ exit_no_param:  \
 define_tft_write_reg(tft_write_reg8, u8)
 define_tft_write_reg(tft_write_reg16, u16)
 
+static int tft_set_backlight(struct tft_priv *priv, uint level)
+{
+    if (level)
+        dm_gpio_set_value(priv->gpio.blk, 1);
+    else
+        dm_gpio_set_value(priv->gpio.blk, 0);
+
+    return 0;
+}
+
 static int tft_reset(struct tft_priv *priv)
 {
     dm_gpio_set_value(priv->gpio.reset, 1);
@@ -256,7 +266,7 @@ static int tft_hw_init(struct tft_priv *priv)
     priv->tftops->clear(priv, 0x0);
 
     pr_debug("enbaling backlight...\n");
-    dm_gpio_set_value(priv->gpio.blk, 1);
+    priv->tftops->set_backlight(priv, priv->display->backlight);
 }
 
 // static void tft_set_backlight(u16 level)
@@ -271,6 +281,8 @@ void tft_merge_tftops(struct tft_ops *dst, struct tft_ops *src)
         dst->write_reg = src->write_reg;
     if (src->init_display)
         dst->init_display = src->init_display;
+    if (src->set_backlight)
+        dst->set_backlight = src->set_backlight;
     if (src->reset)
         dst->reset = src->reset;
     if (src->clear)
@@ -309,6 +321,7 @@ int tft_probe(struct tft_display *display)
     priv->gpio.cs    = TFT_CS_PIN;
     priv->gpio.blk   = TFT_BLK_PIN;
 
+    priv->tftops->set_backlight = tft_set_backlight;
     priv->tftops->reset = tft_reset;
     priv->tftops->set_addr_win = tft_set_addr_win;
     priv->tftops->clear = tft_clear;
