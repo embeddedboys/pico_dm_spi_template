@@ -44,6 +44,7 @@
 #define configUSE_PREEMPTION                    1
 #define configUSE_TICKLESS_IDLE                 0
 #define configUSE_IDLE_HOOK                     0
+#define configUSE_PASSIVE_IDLE_HOOK             0
 #define configUSE_TICK_HOOK                     1
 #define configUSE_MINIMAL_IDLE_HOOK             0
 #define configTICK_RATE_HZ                      ( ( TickType_t ) 1000 )
@@ -115,9 +116,25 @@
 #define configSUPPORT_PICO_SYNC_INTEROP         1
 #define configSUPPORT_PICO_TIME_INTEROP         1
 
+/* RP2350 grows some features */
+#define configENABLE_FPU                        1
+#define configENABLE_MPU                        0
+#define configENABLE_TRUSTZONE                  0
+#define configRUN_FREERTOS_SECURE_ONLY          1
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY    16
+
 #include <assert.h>
 /* Define to trap errors during development. */
 #define configASSERT(x)                         assert(x)
+
+// #include <stdio.h>
+/* Define to trap errors during development. */
+// #define configASSERT(x)                         \
+//     do { \
+//         if(!(x)) \
+//             printf("[assert]: "#x"\n"); \
+//     } while(0);
+#define configTASK_NOTIFICATION_ARRAY_ENTRIES    2
 
 /* Set the following definitions to 1 to include the API function, or zero
 to exclude the API function. */
